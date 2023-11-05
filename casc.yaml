@@ -1,0 +1,37 @@
+jenkins:
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: ${JENKINS_ADMIN_ID}
+          password: ${JENKINS_ADMIN_PASSWORD}
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "Overall/Administer:admin"
+        - "Overall/Read:authenticated"
+
+  remotingSecurity:
+    enabled: true
+
+security:
+  queueItemAuthenticator:
+    authenticators:
+      - global:
+          strategy: triggeringUsersAuthorizationStrategy
+unclassified:
+  location:
+    url: http://localhost:8080/
+tool:
+  git:
+    installations:
+      - home: "git"
+        name: "Default"
+  jdk:
+    installations:
+      - home: "/usr/lib/jvm/java-17-openjdk-amd64"
+        name: "OracleJDK17"
+  maven:
+    installations:
+      - home: "/usr/share/maven"
+        name: "MAVEN3"
