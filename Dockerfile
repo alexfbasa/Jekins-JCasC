@@ -16,7 +16,7 @@ RUN mkdir -p /tmp/download && \
     rm -rf /tmp/download/docker/dockerd && \
     mv /tmp/download/docker/docker* /usr/local/bin/ && \
     rm -rf /tmp/download && \
-    groupadd -g 998 docker && \
+    groupadd -g 991 docker && \
     gpasswd -a jenkins docker && \
     usermod -aG docker jenkins
 

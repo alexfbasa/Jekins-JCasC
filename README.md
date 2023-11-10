@@ -191,7 +191,7 @@ The docker image jenkins_jcasc:v3 is running with a docker engine configure.
 Make sure you are inside the folder that contains the Dockerfile. Very important detail: In the Dockerfile line 14 - It
 is expecting a group number for the docker group:
 
-# groupadd -g 999 docker && \
+# groupadd -g 991 docker && \
 
 This group need to be exactly the docker ID number running in your local host. The Jenkins container will connect the
 docker sock with your local env socks, like a symbolic link. When Jenkins container runs docker service, it will run it
@@ -202,7 +202,7 @@ cat /etc/group | grep docker
 or
 getent group docker
 e.g output
-docker:x:999:user
+docker:x:991:user
 ```
 
 You can run now the image giving a connection between your docker to the container passing "-v" parameter.
