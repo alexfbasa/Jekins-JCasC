@@ -174,7 +174,7 @@ JCasC property to set global permissions. To use it, open your casc.yaml file:
 Next, build a new image to incorporate the changes made to the casc.yaml file:
 
 ```commandline
-docker run --name jenkins --rm -p 8080:8080 --env JENKINS_ADMIN_ID=admin --env JENKINS_ADMIN_PASSWORD=password jenkins:jcasc
+docker run --name jenkins --rm -d -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock --env JENKINS_ADMIN_ID=admin --env JENKINS_ADMIN_PASSWORD="password" jenkins:jcasc
 ```
 
 You can easily customize all your desired settings in Jenkins Configuration as Code (JCasC). After configuring your
@@ -184,3 +184,29 @@ feature. Here, you can download the Jenkins YAML configuration file.
 Once you have the configuration file, you can further enhance your casc.yaml by specifying various parameters. For
 example, you can define settings for tools like Git, JDK, and Maven. JCasC will automatically apply these settings,
 streamlining your tool configurations.
+
+## Notes:
+
+The docker image jenkins_jcasc:v3 is running with a docker engine configure.
+Make sure you are inside the folder that contains the Dockerfile. Very important detail: In the Dockerfile line 14 - It
+is expecting a group number for the docker group:
+
+# groupadd -g 999 docker && \
+
+This group need to be exactly the docker ID number running in your local host. The Jenkins container will connect the
+docker sock with your local env socks, like a symbolic link. When Jenkins container runs docker service, it will run it
+from your local env. So, you need to check it docker group is already defined in your local system.
+
+```text
+cat /etc/group | grep docker
+or
+getent group docker
+e.g output
+docker:x:999:user
+```
+
+You can run now the image giving a connection between your docker to the container passing "-v" parameter.
+```commandline
+docker run -d -p 8080:8080 --env JENKINS_ADMIN_ID=admin -v /var/run/docker.sock:/var/run/docker.sock --env
+JENKINS_ADMIN_PASSWORD=password112rr -p 50000:50000 alexsimple/jenkins_jcasc:v3
+```
