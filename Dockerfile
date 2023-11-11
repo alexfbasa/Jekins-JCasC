@@ -22,6 +22,7 @@ RUN mkdir -p /tmp/download && \
 
 # Instalar pacotes necessários e o Ansible
 RUN apt-get update && apt-get install -y \
+    awscli \
     openjdk-17-jdk \
     maven
 
