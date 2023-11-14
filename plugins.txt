@@ -4,6 +4,7 @@ amazon-ecr:latest
 aws-java-sdk-ecr:latest
 aws-java-sdk:latest
 docker-build-publish:latest
+job-dsl:latest
 sonar:latest
 authorize-project:latest
 build-timestamp:latest
