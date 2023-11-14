@@ -1,4 +1,5 @@
 ant:latest
+ansible:latest
 amazon-ecr:latest
 aws-java-sdk-ecr:latest
 aws-java-sdk:latest
