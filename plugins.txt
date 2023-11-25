@@ -31,3 +31,4 @@ ssh-slaves:latest
 workflow-aggregator:latest
 ws-cleanup:latest
 docker-workflow:latest
+kubernetes:latest
