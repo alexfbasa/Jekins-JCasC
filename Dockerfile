@@ -1,33 +1,30 @@
-FROM jenkins/jenkins:lts
-ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
-
-COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt
-
-COPY casc.yaml /usr/share/jenkins/ref/casc.yaml
-ENV CASC_JENKINS_CONFIG /usr/share/jenkins/ref/casc.yaml
-
-ENV JAVA_HOME_17 /usr/lib/jvm/java-17-openjdk-amd64
-ENV MAVEN_HOME /usr/share/maven
-ENV PATH $MAVEN_HOME/bin:$JAVA_HOME_17/bin:$PATH
-
+#FROM jenkins/jenkins:2.332.3-lts-alpine
+FROM jenkins/jenkins:2.426.1-lts-alpine
 USER root
+# Pipeline
+#RUN /usr/local/bin/install-plugins.sh workflow-aggregator && \
+#    /usr/local/bin/install-plugins.sh github && \
+#    /usr/local/bin/install-plugins.sh ws-cleanup && \
+#    /usr/local/bin/install-plugins.sh greenballs && \
+#    /usr/local/bin/install-plugins.sh simple-theme-plugin && \
+#    /usr/local/bin/install-plugins.sh kubernetes && \
+#    /usr/local/bin/install-plugins.sh docker-workflow && \
+#    /usr/local/bin/install-plugins.sh kubernetes-cli && \
+#    /usr/local/bin/install-plugins.sh github-branch-source
 
-RUN mkdir -p /tmp/download && \
-    curl -L https://download.docker.com/linux/static/stable/x86_64/docker-18.03.1-ce.tgz > docker-18.03.1-ce.tgz && \
-    tar -xzf docker-18.03.1-ce.tgz -C /tmp/download && \
-    rm -rf /tmp/download/docker/dockerd && \
-    mv /tmp/download/docker/docker* /usr/local/bin/ && \
-    rm -rf /tmp/download && \
-    groupadd -g 991 docker && \
-    gpasswd -a jenkins docker && \
-    usermod -aG docker jenkins
+# install Maven, Java, Docker, AWS
+RUN apk add --no-cache maven \
+    openjdk8 \
+    docker \
+    gettext
 
-RUN apt-get update && apt-get install -y \
-    awscli \
-    openjdk-17-jdk \
-    maven
+# Kubectl
+RUN  wget https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
 
-RUN apt-get install -y ansible
+# Need to ensure the gid here matches the gid on the host node. We ASSUME (hah!) this
+# will be stable....keep an eye out for unable to connect to docker.sock in the builds
+# RUN delgroup ping && delgroup docker && addgroup -g 999 docker && addgroup jenkins docker
 
-USER jenkins
+# See https://github.com/kubernetes/minikube/issues/956.
+# THIS IS FOR MINIKUBE TESTING ONLY - it is not production standard (we're running as root!)
+RUN chown -R root "$JENKINS_HOME" /usr/share/jenkins/ref
